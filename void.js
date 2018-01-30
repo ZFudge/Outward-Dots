@@ -7,19 +7,17 @@ const theVoid = {
     },
     dots: [],
     dot: function() {
-
         this.dots.push({
-          x: theVoid.canvas.width/2,
-          y: theVoid.canvas.height/2,
-          r: 30,
-          v: (Math.random() < 0.5) ? parseFloat((Math.random() * 4 + 4).toFixed(3)) : parseFloat((Math.random() * 4 + 4).toFixed(1)) * -1,
-          h: (Math.random() < 0.5) ? parseFloat((Math.random() * 4 + 4).toFixed(3)) : parseFloat((Math.random() * 4 + 4).toFixed(1)) * -1,
-          o: 1
+          x: Math.floor(Math.random() * window.innerWidth),
+          y: 0,
+          r: Math.ceil(Math.random() * 2 + 1),
+          v: parseFloat((Math.random() + 1).toFixed(1)),
+          o: 1,
+          m: (Math.random() > 0.5) ? Math.random() : Math.random() * -1
         });
     },
     targetDotCheck: function() {
-        const frequency = 0.37;
-        if (Math.random().toFixed(5) < frequency) return true;
+        if (Math.random() < 0.5) return true;
     },
     targetDot: function(x,y,c,r) {
         const xran = (Math.random() < 0.5) ? Math.random() / 2 : Math.random() / -2; 
@@ -46,9 +44,12 @@ const theVoid = {
         theVoid.dotCheck();
         const toRemove = [];
         theVoid.dots.forEach(function(cur,ind,arr) {
-            cur.o = 1 - (1/theVoid.canvas.height) * cur.y; 
-            cur.x += cur.h;
-            cur.y += cur.v;
+            cur.o = 1 - (1 / (theVoid.canvas.height * 0.5)) * (cur.y - (theVoid.canvas.height * 0.5));
+            let offset = (Math.random() < 0.5) ? parseFloat((Math.random()/2).toFixed(1)) : (Math.random()/2).toFixed(1) * -1;
+            cur.y = parseFloat((cur.y + cur.v).toFixed(1));
+            cur.x += offset;
+            cur.x += cur.m;
+            (Math.random() > cur.m) ? cur.m *= 0.98 : cur.m *= 1.005;
 
             theVoid.draw(cur);
             if (theVoid.goneCheck(cur)) toRemove.push(ind);
@@ -59,7 +60,7 @@ const theVoid = {
         this.context.clearRect(0,0,this.canvas.width, this.canvas.height);
     },
     draw: function(cur) {
-        this.context.fillStyle = `rgba(0,0,0, ${cur.o})`;;
+        this.context.fillStyle = `rgba(255,255,255, ${cur.o})`;;
         this.context.beginPath();
         this.context.arc(cur.x,cur.y,cur.r,0,Math.PI*2);
         this.context.fill();
